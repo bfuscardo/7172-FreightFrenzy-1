@@ -45,6 +45,9 @@ public class GripPipelineFive extends OpenCvPipeline{
 
 	public double filterContoursMinArea;
 
+	public double x = 0;
+	public double y = 0;
+
 	Telemetry telemetry;
 
 /*
@@ -331,6 +334,13 @@ public class GripPipelineFive extends OpenCvPipeline{
 			if (ratio < minRatio || ratio > maxRatio) continue;
 			output.add(contour);
 		}
+	}
+
+	public double getX(){
+		return x;
+	}
+	public double getY(){
+		return y;
 	}
 
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import java.util.Timer;
@@ -24,33 +24,33 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class DirectionalAutoTestHardware
+public class DefiantHardwareOB
 {
-    
+
     public double driveVelMax = 2400;        // maximum drive velocity (ticks/sec)
-    
+
     // liftScore, liftPowerScore, boxArmScore, boxArmPre, blinkF, blinkB
     public double[][] targets = {
-        {790, 0.95, 0.45, 0.61, 94, 94}, //Lev3
-        {0, 0.95, 0.15, 0.61, 84, 84}, //Shared
-        {790, 0.4, 0.24, 0.24, 96, 96}, //Lev2
-        
-        {850, 0.95, 0.47, 0.61, 97, 94}, //Lev3A
-        {0, 0.95, 0.15, 0.61, 97, 84}, //SharedA
-        {850, 0.4, 0.24, 0.24, 97, 96}, //Lev2A
-        
-        {430, 0.95, 0.47, 0.61, 100, 94}, //Lev3D
-        {0, 0.95, 0.15, 0.61, 100, 84}, //SharedD
-        {270, 0.4, 0.30, 0.24, 100, 96}, //Lev2D
-        
-        {430, 0.95, 0.47, 0.61, 100, 97}, //Lev3DA
-        {0, 0.95, 0.15, 0.61, 100, 97}, //SharedDA
-        {270, 0.4, 0.30, 0.24, 100, 97}, //Lev2DA
-        
-        {850, 0.95, 0.45, 0.61, 68, 68}, //Lev3P
-        {750, 0.4, 0.24, 0.24, 68, 68}, //Lev2P
-        {770, 0.4, 0, 0.61, 68, 68} //Lev1P
-    }; 
+            {790, 0.95, 0.45, 0.61, 94, 94}, //Lev3
+            {0, 0.95, 0.15, 0.61, 84, 84}, //Shared
+            {790, 0.4, 0.24, 0.24, 96, 96}, //Lev2
+
+            {850, 0.95, 0.47, 0.61, 97, 94}, //Lev3A
+            {0, 0.95, 0.15, 0.61, 97, 84}, //SharedA
+            {850, 0.4, 0.24, 0.24, 97, 96}, //Lev2A
+
+            {430, 0.95, 0.47, 0.61, 100, 94}, //Lev3D
+            {0, 0.95, 0.15, 0.61, 100, 84}, //SharedD
+            {270, 0.4, 0.30, 0.24, 100, 96}, //Lev2D
+
+            {430, 0.95, 0.47, 0.61, 100, 97}, //Lev3DA
+            {0, 0.95, 0.15, 0.61, 100, 97}, //SharedDA
+            {270, 0.4, 0.30, 0.24, 100, 97}, //Lev2DA
+
+            {850, 0.95, 0.45, 0.61, 68, 68}, //Lev3P
+            {750, 0.4, 0.24, 0.24, 68, 68}, //Lev2P
+            {770, 0.4, 0, 0.61, 68, 68} //Lev1P
+    };
 
     public int intakeArmC = 0;        // position of arm "UP"
     public int intakeArmF = 510;        // ticks from "UP" to magnetF
@@ -93,26 +93,24 @@ public class DirectionalAutoTestHardware
 
     public boolean redCalibrated = false;
     public boolean blueCalibrated = false;
-    
+
     public double th = 0;
     public boolean heading = false;
-    
+
     public int lineBOffset = 0;
     public int lineFOffset = 0;
-    
+
     public double tapePos = 0.5;
-    public double panPos = 0.2;
-    public double tiltPos = 0.65;
 
     public enum Mode {
         IDLE, INTAKE, LOAD, EXTEND,
         EXTENDED, SCORE, RETRACT, INTAKEDOWN,
         PREEXTEND, LOADIDLE, AUTOEXTEND
     }
-    public Mode smodeNext[] = { 
-        Mode.IDLE, Mode.LOAD, Mode.EXTEND, Mode.EXTENDED,
-        Mode.IDLE, Mode.RETRACT, Mode.IDLE, Mode.IDLE, 
-        Mode.IDLE, Mode.IDLE, Mode.SCORE
+    public Mode smodeNext[] = {
+            Mode.IDLE, Mode.LOAD, Mode.EXTEND, Mode.EXTENDED,
+            Mode.IDLE, Mode.RETRACT, Mode.IDLE, Mode.IDLE,
+            Mode.IDLE, Mode.IDLE, Mode.SCORE
     };
     public Mode smode = Mode.IDLE;
     ElapsedTime smodeTimer = null;
@@ -138,8 +136,8 @@ public class DirectionalAutoTestHardware
     public Servo boxArmF = null;
     public Servo boxArmB = null;
     public Servo carousel = null;
-    public Servo pan = null;
-    public Servo tilt = null;
+    public ServoX pan = null;
+    public ServoX tilt = null;
     public Servo tape = null;
 
     public DigitalChannel magnetF = null;
@@ -152,9 +150,9 @@ public class DirectionalAutoTestHardware
 
     public RevBlinkinLedDriver blink0 = null;
     public RevBlinkinLedDriver blink1 = null;
-    public RevBlinkinLedDriver.BlinkinPattern[] bpatterns = 
-        RevBlinkinLedDriver.BlinkinPattern.values();
-    
+    public RevBlinkinLedDriver.BlinkinPattern[] bpatterns =
+            RevBlinkinLedDriver.BlinkinPattern.values();
+
     public DigitalChannel lineB = null;
     public DigitalChannel lineF = null;
 
@@ -164,12 +162,12 @@ public class DirectionalAutoTestHardware
     //Initialize Hardware That
     //Comes from the Config
     public void init(HardwareMap ahwMap) {
-        
+
         // Save reference to Hardware map
         hwMap = ahwMap;
-        
+
         List<LynxModule> allHubs = hwMap.getAll(LynxModule.class);
-        
+
         smodeTimer = new ElapsedTime();
 
         // Define and Initialize Motors
@@ -186,17 +184,17 @@ public class DirectionalAutoTestHardware
         boxArmB = hwMap.get(Servo.class, "sarm1");
         boxDrop = hwMap.get(Servo.class, "sbox");
         carousel = hwMap.get(Servo.class, "carousel");
-        
-        pan = hwMap.get(Servo.class, "pan");
-        tilt = hwMap.get(Servo.class, "tilt");
+
+        pan = new ServoX(hwMap, "pan");
+        tilt = new ServoX(hwMap, "tilt");
         tape = hwMap.get(Servo.class, "tape");
-        
+
         magnetF = hwMap.get(DigitalChannel.class, "magnetRed");
         magnetB = hwMap.get(DigitalChannel.class, "magnetBlue");
         limit = hwMap.get(DigitalChannel.class, "limit");
         // grabdist = hwMap.get(DigitalChannel.class, "grabdist");
         intakedist = hwMap.get(DistanceSensor.class, "intakedist");
-        
+
         lineB = hwMap.get(DigitalChannel.class, "lineb");
         lineF = hwMap.get(DigitalChannel.class, "linef");
 
@@ -218,13 +216,13 @@ public class DirectionalAutoTestHardware
         boxDrop.setPosition(boxDropClose);
         carousel.setPosition(0.5);
         turret.setPosition(turretC);
-        
-        pan.setPosition(panPos);
-        tilt.setPosition(tiltPos);
-        tape.setPosition(tapePos);
-        
+
+        pan.setPosition(0.8, 0.3);
+        tilt.setPosition(0.55, 0.3);
+        setTapeSpeed(0);
+
         lf.setDirection(DcMotorSimple.Direction.FORWARD);
-        lb.setDirection(DcMotorSimple.Direction.FORWARD); 
+        lb.setDirection(DcMotorSimple.Direction.FORWARD);
         rf.setDirection(DcMotorSimple.Direction.REVERSE);
         rb.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -246,7 +244,7 @@ public class DirectionalAutoTestHardware
         intakeArm.setTargetPosition(0);
         intakeArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intakeArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        
+
         magnetF.setMode(DigitalChannel.Mode.INPUT);
         magnetB.setMode(DigitalChannel.Mode.INPUT);
         limit.setMode(DigitalChannel.Mode.INPUT);
@@ -262,22 +260,22 @@ public class DirectionalAutoTestHardware
         lb.setVelocityPIDFCoefficients(5, 2, 0.5, 11);
         rb.setVelocityPIDFCoefficients(5, 2, 0.5, 11);
         */
-        
+
         blink0 = hwMap.get(RevBlinkinLedDriver.class, "blink0");
         blink1 = hwMap.get(RevBlinkinLedDriver.class, "blink1");
-        
+
         setIntakeB();
         wallEncoder = rb;
-        
+
         intakeArmC = intakeArm.getCurrentPosition()+240;
 
         initIMU(hwMap);
-        
+
         for (LynxModule module : allHubs) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
     }
-    
+
     public void update(){
         boolean downF = !magnetF.getState();
         boolean downB = !magnetB.getState();
@@ -288,7 +286,7 @@ public class DirectionalAutoTestHardware
         if (downB) {
             intakeArmC = (intakeArm.getCurrentPosition() - intakeArmB);
         }
-        
+
         if (smode == Mode.INTAKE || smode == Mode.INTAKEDOWN) {
             boxDrop.setPosition(boxDropOpen);
             intakeArmVel = intakeArmVelMax;
@@ -320,7 +318,7 @@ public class DirectionalAutoTestHardware
             }
             if(inRange(intakeArm, intakeArmRange)){
                 turret.setPosition(turretC);
-                
+
                 if (intakePower >= 0) {
                     intakePower = 0.75;
                 }
@@ -378,9 +376,9 @@ public class DirectionalAutoTestHardware
 
         if (smode == Mode.EXTENDED) {
             liftPower = liftPowerScore - 0.1;
-            
-        }        
-        
+
+        }
+
         if (smode == Mode.SCORE) {
             boxDrop.setPosition(boxDropOpen);
             if (!isGrabFull(true)) { nextMode(); }
@@ -388,7 +386,7 @@ public class DirectionalAutoTestHardware
                 nextMode();
             }
         }
-        
+
         if (smode == Mode.RETRACT) {
             boxArmFPos = boxArmFLoad;
             boxArmBPos = boxArmBLoad;
@@ -396,9 +394,9 @@ public class DirectionalAutoTestHardware
             else {
                 liftRetract = true;
             }
-            
+
         }
-        
+
         if (liftRetract) {
             lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             liftPower = -1;
@@ -414,28 +412,28 @@ public class DirectionalAutoTestHardware
                 lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
         }
-        
+
         lift.setPower(liftPower);
         liftPower = 0;
 
         // intakePower = 0;
         intake.setPower (intakePower);
         intakePower = 0;
-        
+
         boxArmF.setPosition(boxArmFPos);
         boxArmB.setPosition(boxArmBPos);
-        
-        pan.setPosition(panPos);
-        tilt.setPosition(tiltPos);
+
+        pan.update();
+        tilt.update();
         tape.setPosition(tapePos);
-        
+
         wallFollow();
     }
-    
+
     public void stop() {
         driveYXW(0,0,0);
     }
-    
+
     public void setMode(Mode m){
         if (smode != m) {
             modetime = smodeTimer.seconds();
@@ -447,7 +445,7 @@ public class DirectionalAutoTestHardware
     public void nextMode() {
         setMode(smodeNext[smode.ordinal()]);
     }
-    
+
     public void chainMode(Mode m, Mode n) {
         smodeNext[m.ordinal()] = n;
     }
@@ -455,7 +453,7 @@ public class DirectionalAutoTestHardware
     public boolean isMode(Mode m) {
         return smode == m;
     }
-    
+
     public boolean isIdle() {
         return isMode(Mode.IDLE);
     }
@@ -464,26 +462,26 @@ public class DirectionalAutoTestHardware
         intakeArmDown = intakeArmF + 40;
         turretDown = turretF;
     }
-    
+
     public void setIntakeB() {
         intakeArmDown = intakeArmB - 40;
         turretDown = turretB;
     }
-    
+
     public boolean isIntakeFull() {
-        return (intakedist.getDistance(DistanceUnit.CM) < 4.5); 
+        return (intakedist.getDistance(DistanceUnit.CM) < 4.5);
     }
-    
+
     public void intakeArmMid() {
         intakeArm.setTargetPosition(intakeArmC + (int)(intakeArmDown * intakeArmMid));
         intakeArm.setVelocity(intakeArmVelMax);
     }
-    
+
     public void intakeArmUp() {
         intakeArm.setTargetPosition(intakeArmC);
         intakeArm.setVelocity(intakeArmVelMax);
     }
-    
+
     public void intakeArmDown(double vel) {
         intakeArm.setTargetPosition(intakeArmC + intakeArmDown);
         intakeArm.setVelocity(vel);
@@ -492,20 +490,20 @@ public class DirectionalAutoTestHardware
     public void setTurretSwing(double s)  {
         turretSwing = s;
     }
-    
+
     public void setOuttake() {
         intakePower = -1;
     }
-    
+
     public boolean isGrabFull(boolean v) {
         if (grabdist != null) return !grabdist.getState();
         return v;
     }
-    
+
     public void setCarousel(double speed) {
         carousel.setPosition(speed);
     }
-    
+
     public void setScore(int row){
         liftScore = (int)targets[row][0];
         liftPowerScore = targets[row][1];
@@ -516,7 +514,7 @@ public class DirectionalAutoTestHardware
         blink1.setPattern(bpatterns[(int)(targets[row][4]-1)]);
         blink0.setPattern(bpatterns[(int)(targets[row][5]-1)]);
     }
-    
+
     public void setScoreLev3() { setScore(0); }
     public void setScoreLev3A() { setScore(3); }
     public void setScoreLev2() { setScore(2); }
@@ -529,8 +527,8 @@ public class DirectionalAutoTestHardware
     public boolean inRange(DcMotor m, int range) {
         return inRange(m, range, m.getTargetPosition());
     }
-    
-    
+
+
     public void initIMU(HardwareMap hwMap) {
         driveYXW(0,0,0);
         BNO055IMU.Parameters params = new BNO055IMU.Parameters();
@@ -539,7 +537,7 @@ public class DirectionalAutoTestHardware
         imu = hwMap.get(BNO055IMU.class, "imu");
         imu.initialize(params);
     }
-    
+
     public double getIMUHeading() {
         Orientation angles = imu.getAngularOrientation(
                 AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -549,7 +547,7 @@ public class DirectionalAutoTestHardware
     public double getHeading() {
         return getIMUHeading();
     }
-    
+
     public void driveYXW(double ry, double rx, double rw, double vel) {
         // ry == forward, rx == strafe, rw == turn
         lf.setVelocity(vel*(ry + rw + rx));
@@ -557,11 +555,11 @@ public class DirectionalAutoTestHardware
         lb.setVelocity(vel*(ry + rw - rx));
         rb.setVelocity(vel*(ry - rw + rx));
     }
-    
+
     public void driveYXW(double ry, double rx, double rw) {
         driveYXW(ry, rx, rw, driveVelMax);
     }
-    
+
     public void setWallTargetAbs(int targetPos, double vel, int decel, int offsetF, int offsetB) {
         wallTargetPos = targetPos;
         wallDecelTicks = decel;
@@ -569,11 +567,11 @@ public class DirectionalAutoTestHardware
         lineFOffset = offsetF;
         lineBOffset = offsetB;
     }
-    
+
     public void setWallTargetRel(int targetPos, double vel, int decel, int offsetF, int offsetB) {
         setWallTargetAbs(wallEncoder.getCurrentPosition() + targetPos, vel, decel, offsetF, offsetB);
     }
-    
+
     public void stopWallTarget() {
         wallTargetPos = wallDisablePos;
     }
@@ -587,7 +585,7 @@ public class DirectionalAutoTestHardware
         else if(!lineB.getState() && lineBOffset != 0){
             wallTargetPos = currentPos + lineBOffset;
         }
-        
+
         if(!lineF.getState()){
             blink1.setPattern(bpatterns[89]);
             blink0.setPattern(bpatterns[89]);
@@ -600,21 +598,21 @@ public class DirectionalAutoTestHardware
             blink1.setPattern(bpatterns[99]);
             blink0.setPattern(bpatterns[99]);
         }
-        
+
         int dir = (currentPos < wallTargetPos) ? 1 : -1;
         double dist = Math.abs(wallTargetPos - currentPos);
         double vel = Range.clip(wallVel * dist / wallDecelTicks, 0, wallVel);
         double herror = getHeading() - th;
-        
+
         if(th != 0 && !heading){
             driveYXW(dir, 0, herror * 0.04, vel);
         }
         else{
             driveYXW(dir, 0.17, herror * 0.04, vel);
         }
-        
+
     }
-    
+
     public void setTH(double heading, boolean bool){
         this.th = heading;
         this.heading = bool;
@@ -623,7 +621,7 @@ public class DirectionalAutoTestHardware
     public boolean atWallTarget() {
         return inRange(wallEncoder, 100, wallTargetPos);
     }
-    
+
     public int getWallPos() {
         return wallEncoder.getCurrentPosition();
     }
@@ -631,15 +629,15 @@ public class DirectionalAutoTestHardware
         wallEncoder = m;
         return getWallPos();
     }
-        
-    
+
+
     public void liftAdjust(double pow) {
         setMode(Mode.IDLE);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftPower = pow;
         liftRetract = false;
     }
-    
+
     /*
     public void liftAdjust(int target) {
         setMode(Mode.EXTENDED);
@@ -652,33 +650,18 @@ public class DirectionalAutoTestHardware
         boxArmFPos += step;
         boxArmBPos -= step;
     }
-    
+
     public void setlineBOffset(int i){
         lineBOffset = i;
     }
-    
+
     public void setlineFOffset(int i){
         lineFOffset = i;
     }
-    
-    public void pan(double offset){
-        panPos += offset;
-    }
-    
-    public void tilt(double offset){
-        tiltPos += offset;
-    }
-    
-    public void setPan(double offset){
-        panPos = offset;
-    }
-    
-    public void setTilt(double offset){
-        tiltPos = offset;
-    }
-    
-    public void tape(double speed){
-        tapePos = speed;
+
+    public void setTapeSpeed(double speed) {
+        // speed ranges from -1 to +1
+        tapePos = Range.clip(0.5 + speed * 0.5, 0, 1);
     }
 
     public void telemetry(Telemetry t) {
@@ -701,9 +684,6 @@ public class DirectionalAutoTestHardware
         t.addData("atWallTarget", atWallTarget());
         t.addData ("intakeDist", intakedist.getDistance(DistanceUnit.CM));
         t.addData("liftRetract", liftRetract);
-        t.addData("pan", panPos);
-        t.addData("tilt", tiltPos);
-        t.addData("tape", tapePos);
         t.addData("Intake Arm Range", inRange(intakeArm, intakeArmRange));
         t.update();
     }
